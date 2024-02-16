@@ -1,0 +1,9 @@
+Desenvolvimento sistema Posto ABC
+
+•	Sistema desenvolvido com Delphi Alexandria e Firebird 3.3.
+•	Metodologia MVC e Singleton
+•	Gerador de relatório FortesReport.
+
+
+Coloco-me à disposição para maiores esclarecimentos.
+Atenciosamente,

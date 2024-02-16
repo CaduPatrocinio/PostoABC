@@ -1,0 +1,98 @@
+unit uCombustivelModel;
+
+interface
+
+uses
+  uEnumerado, FireDAC.Comp.Client;
+type
+  TCombustivelModel = class
+  private
+    FAcao: TAcao;
+    FIdCombustivel: Integer;
+    FCombustivel: string;
+    FVlLitro: double;
+    FPercImporto: double;
+    procedure SetAcao(const Value: TAcao);
+    procedure SetIdCombustivel(const Value: Integer);
+    procedure SetCombustivel(const Value: string);
+    procedure SetVlLitro(const Value: double);
+    procedure SetPercImposto(const Value: double);
+  public
+    function Obter: TFDQuery;
+    function Salvar: Boolean;
+    function GetId(AAutoIncrementar: Integer): Integer;
+    property IdCombustivel: Integer read FIdCombustivel write SetIdCombustivel;
+    property SetCombustivel: string read FCombustivel write SetCombustivel;
+    property VlLitro: double read FVlLitro write SetVlLitro;
+    property PercImposto: double read FPercImporto write SetPercImposto;
+
+    property Acao: TAcao read FAcao write SetAcao;
+  end;
+implementation
+{ TBambaModel }
+uses uBombaDao;
+function TCombustivelModel.GetId(AAutoIncrementar: Integer): Integer;
+var VBombaDao: TBombaDao;
+begin
+  VBombaDao := TBombaDao.Create;
+  try
+    Result := VBombaDao.GetId(AAutoIncrementar);
+  finally
+    VBombaDao.Free;
+  end;
+end;
+function TCombustivelModel.Obter: TFDQuery;
+var VBombaDao: TBombaDao;
+begin
+  VBombaDao := TBombaDao.Create;
+  try
+    Result := VBombaDao.Obter;
+  finally
+    VBombaDao.Free;
+  end;
+end;
+function TCombustivelModel.ObterTanque: TFDQuery;
+var VBombaDao: TBombaDao;
+begin
+  VBombaDao := TBombaDao.Create;
+  try
+    Result := VBombaDao.Obter;
+  finally
+    VBombaDao.Free;
+  end;
+end;
+
+function TCombustivelModel.Salvar: Boolean;
+var VBombaDao: TBombaDao;
+begin
+  Result := False;
+  VBombaDao := TBombaDao.Create;
+  try
+    case FAcao of
+      uEnumerado.tacIncluir: Result := VBombaDao.Incluir(Self);
+      uEnumerado.tacAlterar: Result := VBombaDao.Alterar(Self);
+      uEnumerado.tacExcluir: Result := VBombaDao.Excluir(Self);
+    end;
+  finally
+    VBombaDao.Free;
+  end;
+end;
+procedure TCombustivelModel.SetAcao(const Value: TAcao);
+begin
+  FAcao := Value;
+end;
+procedure TCombustivelModel.SetIdCombustivel(const Value: Integer);
+begin
+   FIdCombustivel := Value;
+end;
+
+procedure TCombustivelModel.SetIdTanque(const Value: Integer);
+begin
+   FIVlLitro := Value;
+end;
+
+procedure TCombustivelModel.SetCombustivel(const Value: string);
+begin
+  FCombustivel := Value;
+end;
+end.

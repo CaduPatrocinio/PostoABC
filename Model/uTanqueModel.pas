@@ -1,0 +1,112 @@
+unit uTanqueModel;
+
+interface
+
+uses
+  uEnumerado, FireDAC.Comp.Client;
+type
+  TTanqueModel = class
+  private
+    FAcao: TAcao;
+    FIdTanque: Integer;
+    FIdCombustivel: Integer;
+    FTanque: string;
+    FCapacidade: double;
+    procedure SetAcao(const Value: TAcao);
+    procedure SetIdTanque(const Value: Integer);
+    procedure SetIdCombustivel(const Value: Integer);
+    procedure SetTanque(const Value: string);
+    procedure SetCapacidade(const Value: double);
+  public
+    function Obter: TFDQuery;
+    function ObterTanque: TFDQuery;
+    function Salvar: Boolean;
+    function GetId(AAutoIncrementar: Integer): Integer;
+    property IdTanque: Integer read FIdTanque write SetIdTanque;
+    property IdCombustivel: Integer read FIdCombustivel write SetIdCombustivel;
+    property Tanque: string read FTanque write SetTanque;
+    property Capacidade: double read FCapacidade write SetCapacidade;
+    property Acao: TAcao read FAcao write SetAcao;
+  end;
+
+implementation
+{ TTanqueModel }
+
+uses uTanqueDao;
+
+function TTanqueModel.GetId(AAutoIncrementar: Integer): Integer;
+var VTanqueDao: TTanqueDao;
+begin
+  VTanqueDao := TTanqueDao.Create;
+  try
+    Result := VTanqueDao.GetId(AAutoIncrementar);
+  finally
+    VTanqueDao.Free;
+  end;
+end;
+
+function TTanqueModel.Obter: TFDQuery;
+var VTanqueDao: TTanqueDao;
+begin
+  VTanqueDao := TTanqueDao.Create;
+  try
+    Result := VTanqueDao.Obter;
+  finally
+    VTanqueDao.Free;
+  end;
+end;
+
+function TTanqueModel.ObterTanque: TFDQuery;
+var VTanqueDao: TTanqueDao;
+begin
+  VTanqueDao := TTanqueDao.Create;
+  try
+    Result := VTanqueDao.Obter;
+  finally
+    VTanqueDao.Free;
+  end;
+end;
+
+function TTanqueModel.Salvar: Boolean;
+var VTanqueDao: TTanqueDao;
+begin
+  Result := False;
+  VTanqueDao := TTanqueDao.Create;
+  try
+    case FAcao of
+      uEnumerado.tacIncluir: Result := VTanqueDao.Incluir(Self);
+      uEnumerado.tacAlterar: Result := VTanqueDao.Alterar(Self);
+      uEnumerado.tacExcluir: Result := VTanqueDao.Excluir(Self);
+    end;
+  finally
+    VTanqueDao.Free;
+  end;
+end;
+
+procedure TTanqueModel.SetAcao(const Value: TAcao);
+begin
+  FAcao := Value;
+end;
+procedure TTanqueModel.SetIdTanque(const Value: Integer);
+begin
+   FIdTanque := Value;
+end;
+
+procedure TTanqueModel.SetIdCombustivel(const Value: Integer);
+begin
+  FIdCombustivel := Value;
+end;
+
+procedure TTanqueModel.SetTanque(const Value: string);
+begin
+  FTanque := value;
+end;
+
+procedure TTanqueModel.SetCapacidade(const Value: double);
+begin
+  FCapacidade := value;
+end;
+end.
+
+
+

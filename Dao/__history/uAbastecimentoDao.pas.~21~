@@ -1,0 +1,112 @@
+unit uAbastecimentoDao;
+
+interface
+
+uses
+  FireDAC.Comp.Client, uConexao, System.SysUtils, uAbastecimentoModel;
+type
+  TAbastecimentoDao = class
+  private
+    FConexao: TConexao;
+  public
+    constructor Create;
+    function Incluir(AAbastecimentoModel: TAbastecimentoModel): Boolean;
+    function Alterar(AAbastecimentoModel: TAbastecimentoModel): Boolean;
+    function Excluir(AAbastecimentoModel: TAbastecimentoModel): Boolean;
+    function GetId(AAutoIncrementar: Integer): Integer;
+    function Obter: TFDQuery;
+    function ObterBomba: TFDQuery;
+  end;
+
+implementation
+{ TAbastecimentoDao }
+
+uses uControleSistema;
+
+function TAbastecimentoDao.Alterar(AAbastecimentoModel: TAbastecimentoModel): Boolean;
+var VQry: TFDQuery;
+begin
+  VQry := FConexao.CriarQuery();
+  try
+    VQry.ExecSQL('UPDATE ABASTECIMENTO SET ID_BOMBA = :ID_BOMBA, VALOR_LITRO = :VALOR_LITRO, V = :PERC_IMPOSTO, QTDE_LITROS = :QTDE_LITROS,'+
+                  ' SUB_TOTAL = :SUB_TOTAL, VALOR_IMPOSTO = :VALOR_IMPOSTO, VALOR_TOTAL = :VALOR_TOTAL'+
+                  ' WHERE (ID_ABASTECIMENTO = :ID_ABASTECIMENTO)',
+                  [AAbastecimentoModel.IdBomba, AAbastecimentoModel.VlLitro, AAbastecimentoModel.PercImposto, AAbastecimentoModel.QtdeLitros,
+                   AAbastecimentoModel.SubTotal, AAbastecimentoModel.TotalImposto, AAbastecimentoModel.VlTotal]);
+    Result := True;
+  finally
+    VQry.Free;
+  end;
+end;
+
+constructor TAbastecimentoDao.Create;
+begin
+  FConexao := TControleSistemal.GetInstance().Conexao;
+end;
+
+function TAbastecimentoDao.Excluir(AAbastecimentoModel: TAbastecimentoModel): Boolean;
+var VQry: TFDQuery;
+begin
+  VQry := FConexao.CriarQuery();
+  try
+    VQry.ExecSQL('DELETE FROM ABASTECIMENTO WHERE (ID_ABASTECIMENTOE = :ID_ABASTECIMENTO)', [AAbastecimentoModel.IdAbastecimento]);
+    Result := True;
+  finally
+    VQry.Free;
+  end;
+end;
+
+function TAbastecimentoDao.GetId(AAutoIncrementar: Integer): Integer;
+var VQry: TFDQuery;
+begin
+  VQry := FConexao.CriarQuery();
+  try
+    VQry.Open('SELECT GEN_ID(GEN_ABASTECIMENTO_ID, ' + IntToStr(AAutoIncrementar) + ' ) FROM RDB$DATABASE');
+    try
+      Result := VQry.Fields[0].AsInteger;
+    finally
+      VQry.Close;
+    end;
+  finally
+    VQry.Free;
+  end;
+end;
+
+function TAbastecimentoDao.Incluir(AAbastecimentoModel: TAbastecimentoModel): Boolean;
+var VQry: TFDQuery;
+begin
+  VQry := FConexao.CriarQuery();
+  try
+    VQry.ExecSQL('INSERT INTO ABASTECIMENTO (ID_ABASTECIMENTO, ID_BOMBA, VALOR_LITRO, PERC_IMPOSTO, QTDE_LITROS, SUB_TOTAL, VALOR_IMPOSTO, VALOR_TOTAL)' +
+                 'VALUES (:ID_ABASTECIMENTO, :ID_BOMBA, :VALOR_LITRO, :PERC_IMPOSTO, :QTDE_LITROS, :SUB_TOTAL, :VALOR_IMPOSTO, :VALOR_TOTAL)',
+                 [AAbastecimentoModel.IdAbastecimento, AAbastecimentoModel.IdBomba, AAbastecimentoModel.VlLitro, AAbastecimentoModel.PercImposto,
+                  AAbastecimentoModel.QtdeLitros, AAbastecimentoModel.SubTotal, AAbastecimentoModel.TotalImposto, AAbastecimentoModel.VlTotal]);
+    Result := True;
+  finally
+    VQry.Free;
+  end;
+end;
+
+function TAbastecimentoDao.Obter: TFDQuery;
+var VQry: TFDQuery;
+begin
+  VQry := FConexao.CriarQuery();
+  VQry.Open('SELECT ID_ABASTECIMENTO, ID_BOMBA, DT_ABASTECIMENTO, VALOR_LITRO, PERC_IMPOSTO, QTDE_LITROS, SUB_TOTAL, VALOR_IMPOSTO,'+
+            ' VALOR_TOTAL FROM ABASTECIMENTO ORDER BY ID_ABASTECIMENTO');
+  Result := VQry;
+end;
+
+function TAbastecimentoDao.ObterBomba: TFDQuery;
+var VQry: TFDQuery;
+begin
+  VQry := FConexao.CriarQuery();
+  VQry.Open('SELECT B.ID_BOMBA, B.DESCRICAO, C.VALOR_LITRO, C.PERC_IMPOSTO '+
+            'FROM BOMBA B '+
+            'LEFT JOIN TANQUE T ON T.ID_TANQUE = B.ID_TANQUE '+
+            'LEFT JOIN COMBUSTIVEL C ON C.ID_COMBUSTIVEL = T.ID_COMBUSTIVEL '+
+            'ORDER BY ID_BOMBA');
+   Result := VQry;
+end;
+
+end.
+

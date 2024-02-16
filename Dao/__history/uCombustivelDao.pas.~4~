@@ -1,0 +1,90 @@
+unit uCombustivelDao;
+
+interface
+
+uses
+  FireDAC.Comp.Client, uConexao, System.SysUtils, uCombustivelModel;
+type
+  TCombustivelDao = class
+  private
+    FConexao: TConexao;
+  public
+    constructor Create;
+    function Incluir(ACombustivelModel: TCombustivelModel): Boolean;
+    function Alterar(ACombustivelModel: TCombustivelModel): Boolean;
+    function Excluir(ACombustivelModel: TCombustivelModel): Boolean;
+    function GetId(AAutoIncrementar: Integer): Integer;
+    function Obter: TFDQuery;
+  end;
+implementation
+{ TBombaDao }
+uses uControleSistema;
+
+function TBombaDao.Alterar(ACombustivelModel: TCombustivelModel): Boolean;
+var VQry: TFDQuery;
+begin
+  VQry := FConexao.CriarQuery();
+  try
+    VQry.ExecSQL('UPDATE BOMBA SET DESCRICAO = :BOMBA WHERE (ID_BOMBA = :ID_BOMBA)', [ACombustivelModel.Bomba, ACombustivelModel.IdBomba]);
+    Result := True;
+  finally
+    VQry.Free;
+  end;
+end;
+constructor TBombaDao.Create;
+begin
+  FConexao := TControleSistemal.GetInstance().Conexao;
+end;
+function TBombaDao.Excluir(ACombustivelModel: TCombustivelModel): Boolean;
+var VQry: TFDQuery;
+begin
+  VQry := FConexao.CriarQuery();
+  try
+    VQry.ExecSQL('DELETE FROM BOMBA WHERE (ID_BOMBA = :ID_BOMBA)', [ACombustivelModel.IdBomba]);
+    Result := True;
+  finally
+    VQry.Free;
+  end;
+end;
+function TBombaDao.GetId(AAutoIncrementar: Integer): Integer;
+var VQry: TFDQuery;
+begin
+  VQry := FConexao.CriarQuery();
+  try
+    VQry.Open('SELECT GEN_ID(GEN_BOMBA_ID, ' + IntToStr(AAutoIncrementar) + ' ) FROM RDB$DATABASE');
+    try
+      Result := VQry.Fields[0].AsInteger;
+    finally
+      VQry.Close;
+    end;
+  finally
+    VQry.Free;
+  end;
+end;
+function TBombaDao.Incluir(ACombustivelModel: TCombustivelModel): Boolean;
+var VQry: TFDQuery;
+begin
+  VQry := FConexao.CriarQuery();
+  try
+    VQry.ExecSQL('INSERT INTO BOMBA (ID_BOMBA, DESCRICAO, ID_TANQUE) VALUES (:ID_BOMBA, :DESCRICA0, :ID_TANQUE)', [ACombustivelModel.IdBomba, ACombustivelModel.Bomba, ACombustivelModel.IdTanque]);
+    Result := True;
+  finally
+    VQry.Free;
+  end;
+end;
+function TBombaDao.Obter: TFDQuery;
+var VQry: TFDQuery;
+begin
+  VQry := FConexao.CriarQuery();
+  VQry.Open('SELECT ID_BOMBA, DESCRICAO, ID_TANQUE FROM BOMBA ORDER BY ID_BOMBA');
+  Result := VQry;
+end;
+function TBombaDao.ObterTanque: TFDQuery;
+var VQry: TFDQuery;
+begin
+  VQry := FConexao.CriarQuery();
+  VQry.Open('SELECT ID_TANQUE, DESCRICAO FROM TANQUE ORDER BY ID_TANQUE');
+  Result := VQry;
+end;
+
+end.

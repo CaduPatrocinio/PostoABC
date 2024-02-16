@@ -1,0 +1,105 @@
+unit uCombustivelModel;
+
+interface
+
+uses
+  uEnumerado, FireDAC.Comp.Client;
+type
+  TCombustivelModel = class
+  private
+    FAcao: TAcao;
+    FIdCombustivel: Integer;
+    FCombustivel: string;
+    FVlLitro: double;
+    FPercImporto: double;
+    procedure SetAcao(const Value: TAcao);
+    procedure SetIdCombustivel(const Value: Integer);
+    procedure SetCombustivel(const Value: string);
+    procedure SetVlLitro(const Value: double);
+    procedure SetPercImposto(const Value: double);
+    function ObterTanque: TFDQuery;
+    procedure SetIdTanque(const Value: Integer);
+  public
+    function Obter: TFDQuery;
+    function Salvar: Boolean;
+    function GetId(AAutoIncrementar: Integer): Integer;
+    property IdCombustivel: Integer read FIdCombustivel write SetIdCombustivel;
+    property SetCombustivel: string read FCombustivel write SetCombustivel;
+    property VlLitro: double read FVlLitro write SetVlLitro;
+    property PercImposto: double read FPercImporto write SetPercImposto;
+
+    property Acao: TAcao read FAcao write SetAcao;
+  end;
+implementation
+{ TCombustivelModel }
+uses uBombaDao;
+function TCombustivelModel.GetId(AAutoIncrementar: Integer): Integer;
+var VCombustivelDao: TCombustivelDao;
+begin
+  VCombustivelDao := TCombustivelDao.Create;
+  try
+    Result := VCombustivelDao.GetId(AAutoIncrementar);
+  finally
+    VCombustivelDao.Free;
+  end;
+end;
+function TCombustivelModel.Obter: TFDQuery;
+var VCombustivelDao: TCombustivelDao;
+begin
+  VCombustivelDao := TCombustivelDao.Create;
+  try
+    Result := VCombustivelDao.Obter;
+  finally
+    VCombustivelDao.Free;
+  end;
+end;
+function TCombustivelModel.ObterTanque: TFDQuery;
+var VCombustivelDao: TCombustivelDao;
+begin
+  VCombustivelDao := TCombustivelDao.Create;
+  try
+    Result := VCombustivelDao.Obter;
+  finally
+    VCombustivelDao.Free;
+  end;
+end;
+
+function TCombustivelModel.Salvar: Boolean;
+var VCombustivelDao: TCombustivelDao;
+begin
+  Result := False;
+  VCombustivelDao := TCombustivelDao.Create;
+  try
+    case FAcao of
+      uEnumerado.tacIncluir: Result := VCombustivelDao.Incluir(Self);
+      uEnumerado.tacAlterar: Result := VCombustivelDao.Alterar(Self);
+      uEnumerado.tacExcluir: Result := VCombustivelDao.Excluir(Self);
+    end;
+  finally
+    VCombustivelDao.Free;
+  end;
+end;
+procedure TCombustivelModel.SetAcao(const Value: TAcao);
+begin
+  FAcao := Value;
+end;
+procedure TCombustivelModel.SetIdCombustivel(const Value: Integer);
+begin
+   FIdCombustivel := Value;
+end;
+
+procedure TCombustivelModel.SetPercImposto(const Value: double);
+begin
+  FPercImporto := Value;
+end;
+
+procedure TCombustivelModel.SetVlLitro(const Value: double);
+begin
+
+end;
+
+procedure TCombustivelModel.SetCombustivel(const Value: string);
+begin
+  FCombustivel := Value;
+end;
+end.

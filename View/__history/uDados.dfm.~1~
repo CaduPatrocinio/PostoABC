@@ -1,0 +1,5 @@
+object DmDados: TDmDados
+  Height = 185
+  Width = 330
+  PixelsPerInch = 120
+end

@@ -1,0 +1,16 @@
+object DmDados: TDmDados
+  Height = 185
+  Width = 330
+  PixelsPerInch = 120
+  object FDConnection: TFDConnection
+    Params.Strings = (
+      'Database=C:\PostoABC\DataBase\DATABASE.FDB'
+      'User_Name=sysdba'
+      'Password=masterkey'
+      'DriverID=FB')
+    Connected = True
+    LoginPrompt = False
+    Left = 96
+    Top = 32
+  end
+end

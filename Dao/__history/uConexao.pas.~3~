@@ -1,0 +1,59 @@
+unit uConexao;
+
+interface
+
+uses
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Error, FireDAC.UI.Intf, FireDAC.Phys.Intf, FireDAC.Stan.Def,
+  FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys, Data.DB, FireDAC.Comp.Client, FireDAC.Phys.MySQLDef,
+  FireDAC.Phys.FB, System.SysUtils, FireDAC.DApt, FireDAC.VCLUI.Wait;
+type
+  TConexao = class
+  private
+    FConexao: TFDConnection;
+    procedure ConfigurarConexao;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    function GetConexao: TFDConnection;
+    function CriarQuery: TFDQuery;
+  end;
+
+  const
+    PATH_BANCO: string = 'C:\PostoABC\DataBase\DataBase.FDB';
+
+implementation
+{ TConexao }
+
+procedure TConexao.ConfigurarConexao;
+begin
+  FConexao.Params.DriverID := 'FB';
+  FConexao.Params.Database := PATH_BANCO;
+  FConexao.Params.UserName := 'SYSDBA';
+  FConexao.Params.Password := 'masterkey';
+  FConexao.LoginPrompt     := False;
+end;
+
+constructor TConexao.Create;
+begin
+  FConexao:= TFDConnection.Create(nil);
+  Self.ConfigurarConexao();
+end;
+
+function TConexao.CriarQuery: TFDQuery;
+var Qry: TFDQuery;
+begin
+  Qry := TFDQuery.Create(nil);
+  Qry.Connection := FConexao;
+  Result := Qry;
+end;
+
+destructor TConexao.Destroy;
+begin
+  FConexao.Free;
+end;
+
+function TConexao.GetConexao: TFDConnection;
+begin
+  Result := FConexao;
+end;
+end.

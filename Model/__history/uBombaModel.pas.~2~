@@ -1,0 +1,91 @@
+unit uBombaModel;
+
+interface
+
+uses
+  uEnumerado, FireDAC.Comp.Client;
+
+type
+  TBombaModel = class
+  private
+    FAcao: TAcao;
+    FCodigo: Integer;
+    FBomba: string;
+
+    procedure SetAcao(const Value: TAcao);
+    procedure SetCodigo(const Value: Integer);
+    procedure SetBomba(const Value: string);
+  public
+    function Obter: TFDQuery;
+    function Salvar: Boolean;
+    function GetId(AAutoIncrementar: Integer): Integer;
+
+    property Codigo: Integer read FCodigo write SetCodigo;
+    property Bomba: string read FBomba write SetBomba;
+    property Acao: TAcao read FAcao write SetAcao;
+  end;
+
+implementation
+
+{ TCliente }
+
+uses uBombaDao;
+
+function TBombaModel.GetId(AAutoIncrementar: Integer): Integer;
+var
+  VBombaDao: TBombaDao;
+begin
+  VBombaDao := TBombaDao.Create;
+  try
+    Result := VBombaDao.GetId(AAutoIncrementar);
+  finally
+    VBombaDao.Free;
+  end;
+end;
+
+function TBombaModel.Obter: TFDQuery;
+var
+  VClienteDao: TBombaDao;
+begin
+  VClienteDao := TBombaDao.Create;
+  try
+    Result := VClienteDao.Obter;
+  finally
+    VClienteDao.Free;
+  end;
+end;
+
+function TBombaModel.Salvar: Boolean;
+var
+  VBombaDao: TBombaDao;
+begin
+  Result := False;
+
+  VBombaDao := TBombaDao.Create;
+  try
+    case FAcao of
+      uEnumerado.tacIncluir: Result := VBombaDao.Incluir(Self);
+      uEnumerado.tacAlterar: Result := VBombaDao.Alterar(Self);
+      uEnumerado.tacExcluir: Result := VBombaDao.Excluir(Self);
+    end;
+  finally
+    VBombaDao.Free;
+  end;
+end;
+
+procedure TBombaModel.SetAcao(const Value: TAcao);
+begin
+  FAcao := Value;
+end;
+
+procedure TBombaModel.SetCodigo(const Value: Integer);
+begin
+  FCodigo := Value;
+end;
+
+procedure TBombaModel.SetBomba(const Value: string);
+begin
+  FBomba := Value;
+end;
+
+end.
